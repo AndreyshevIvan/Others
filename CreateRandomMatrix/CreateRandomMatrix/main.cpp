@@ -41,7 +41,7 @@ int main(int argc, char* argv[])
 		cout << "Invalid arguments!\n"
 			<< "The size of the matrix can be in the range [" << MIN_SIZE << ", " << MAX_SIZE << "].\n";
 
-		return 0;
+		return 1;
 	}
 
 	ofstream output(fileName);
