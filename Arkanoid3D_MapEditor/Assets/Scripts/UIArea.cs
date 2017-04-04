@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 public class UIArea : MonoBehaviour, IToolColors
 {
-    EditorController m_editor;
+    IEditorTool m_editorTool;
 
     public Button[] m_editorButtons;
 
@@ -16,16 +16,37 @@ public class UIArea : MonoBehaviour, IToolColors
 
     public Color m_emptyColor;
 
+    public Text m_currToolName;
     public Image m_currTool;
 
-    public void Init(EditorController editor)
+    public void Init(IEditorTool editor)
     {
-        m_editor = editor;
+        m_editorTool = editor;
     }
 
     private void FixedUpdate()
     {
+        UpdateCurrentTool();
+    }
+    void UpdateCurrentTool()
+    {
+        if (m_editorTool.IsActive())
+        {
+            Tool currTool = m_editorTool.GetCurrentTool();
 
+            if (currTool.type == ToolType.BLOCK)
+            {
+                m_currToolName.text = "Block " + GetBlockName(currTool.key);
+            }
+            else if (currTool.type == ToolType.BONUS)
+            {
+                m_currToolName.text = "Bonus " + GetBonusName(currTool.key);
+            }
+        }
+        else
+        {
+            m_currToolName.text = "";
+        }
     }
 
     public void SetActive(bool isActive)
@@ -59,7 +80,6 @@ public class UIArea : MonoBehaviour, IToolColors
 
         return color;
     }
-
     public Color GetBonusColor(char bonusKey)
     {
         Color color = m_emptyColor;
@@ -90,5 +110,68 @@ public class UIArea : MonoBehaviour, IToolColors
         }
 
         return color;
+    }
+
+    public string GetBlockName(char blockKey)
+    {
+        string name = "";
+
+        if (blockKey == FileParser.easyKey)
+        {
+            name = "Easy";
+        }
+        else if (blockKey == FileParser.normalKey)
+        {
+            name = "Normal";
+        }
+        else if (blockKey == FileParser.hardKey)
+        {
+            name = "Hard";
+        }
+        else if (blockKey == FileParser.immortalKey)
+        {
+            name = "Immortal";
+        }
+        else if (blockKey == FileParser.emptyKey)
+        {
+            name = "lastic";
+        }
+
+        return name;
+    }
+    public string GetBonusName(char bonusKey)
+    {
+        string name = "";
+
+        if (bonusKey == FileParser.wallKey)
+        {
+            name = "wall";
+        }
+        else if (bonusKey == FileParser.lifeKey)
+        {
+            name = "life";
+        }
+        else if (bonusKey == FileParser.multiplierKey)
+        {
+            name = "points multiplier";
+        }
+        else if (bonusKey == FileParser.multiballKey)
+        {
+            name = "multiball";
+        }
+        else if (bonusKey == FileParser.gunsKey)
+        {
+            name = "guns";
+        }
+        else if (bonusKey == FileParser.fireballKey)
+        {
+            name = "fireball";
+        }
+        else if (bonusKey == FileParser.emptyKey)
+        {
+            name = "lastic";
+        }
+
+        return name;
     }
 }

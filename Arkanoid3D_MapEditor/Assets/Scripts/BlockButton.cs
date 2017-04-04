@@ -61,6 +61,11 @@ public class BlockButton : MonoBehaviour
     public void SetBlockKey(char key)
     {
         m_blockKey = key;
+
+        if (m_blockKey == FileParser.emptyKey)
+        {
+            SetBonusKey(FileParser.emptyKey);
+        }
     }
     public void SetBonusKey(char key)
     {

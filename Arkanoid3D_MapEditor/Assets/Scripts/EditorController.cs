@@ -46,7 +46,7 @@ public class EditorController : MonoBehaviour, IEditorTool
 
     string[] m_level;
     int m_editLevelNumber;
-    bool m_isStartEdit = false;
+    bool m_isToolActive = false;
 
     const int LEVELS_COUNT = 50;
 
@@ -63,9 +63,28 @@ public class EditorController : MonoBehaviour, IEditorTool
         m_buttonsArea.Init(this);
         m_interface.Init(this);
         FileParser.CreateFiles(LEVELS_COUNT);
+        InitTools();
     }
     void Start()
     {
+        m_interface.SetActive(false);
+    }
+    public void StartEditLevel(int levelNumber)
+    {
+        if (FileParser.IsLevelAvalable(levelNumber))
+        {
+            m_isToolActive = true;
+            m_interface.SetActive(true);
+            m_editLevelNumber = levelNumber;
+            m_buttonsInner.SetActive(false);
+            m_level = FileParser.GetLevel(levelNumber);
+            PreparePlan();
+        }
+    }
+    public void BackToLevels()
+    {
+        m_isToolActive = false;
+        m_buttonsInner.SetActive(true);
         m_interface.SetActive(false);
     }
 
@@ -78,7 +97,7 @@ public class EditorController : MonoBehaviour, IEditorTool
         m_blockLastic = new Tool(FileParser.emptyKey, ToolType.BLOCK);
 
         m_wallBonus = new Tool(FileParser.wallKey, ToolType.BONUS);
-        m_multyballBonus = new Tool(FileParser.multyballKey, ToolType.BONUS);
+        m_multyballBonus = new Tool(FileParser.multiballKey, ToolType.BONUS);
         m_fireballBonus = new Tool(FileParser.fireballKey, ToolType.BONUS);
         m_pointsBonus = new Tool(FileParser.multiplierKey, ToolType.BONUS);
         m_lifeBonus = new Tool(FileParser.lifeKey, ToolType.BONUS);
@@ -93,19 +112,6 @@ public class EditorController : MonoBehaviour, IEditorTool
         return m_currTool;
     }
 
-    public void StartEditLevel(int levelNumber)
-    {
-        if (FileParser.IsLevelAvalable(levelNumber))
-        {
-            m_isStartEdit = true;
-            m_interface.SetActive(true);
-            m_editLevelNumber = levelNumber;
-            m_buttonsInner.SetActive(false);
-            m_level = FileParser.GetLevel(levelNumber);
-            PreparePlan();
-            InitTools();
-        }
-    }
     void PreparePlan()
     {
         int blocksCount = FileParser.collsCount * FileParser.rowsCount;
@@ -148,14 +154,55 @@ public class EditorController : MonoBehaviour, IEditorTool
         m_currTool = m_blockLastic;
     }
 
+    public void SetWallTool()
+    {
+        m_currTool = m_wallBonus;
+    }
+    public void SetFireballTool()
+    {
+        m_currTool = m_fireballBonus;
+    }
+    public void SetMultyballTool()
+    {
+        m_currTool = m_multyballBonus;
+    }
+    public void SetMultiplierTool()
+    {
+        m_currTool = m_pointsBonus;
+    }
+    public void SetGunsTool()
+    {
+        m_currTool = m_gunsBonus;
+    }
+    public void SetLifeTool()
+    {
+        m_currTool = m_lifeBonus;
+    }
+    public void SetBonusLasticTool()
+    {
+        m_currTool = m_bonusLastic;
+    }
+
     public void SaveEditLevel()
     {
         string[] newRowsCode = m_mapPlane.GetRowsCode();
+        int rowNum = 0;
 
-        if (m_isStartEdit)
+        for (int i = FileParser.systemStrCount; i < m_level.Length; i++)
         {
-            //FileParser.EditLevel(m_editLevelNumber, m_level);
+            m_level[i] = newRowsCode[rowNum];
+            rowNum++;
         }
+
+        if (m_isToolActive)
+        {
+            FileParser.EditLevel(m_editLevelNumber, m_level);
+        }
+    }
+
+    public bool IsActive()
+    {
+        return m_isToolActive;
     }
 
 }

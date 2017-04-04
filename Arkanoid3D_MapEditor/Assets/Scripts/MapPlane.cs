@@ -40,7 +40,7 @@ public class MapPlane : MonoBehaviour
 
     void SpawnBlocks(IEditorTool editorTool, IToolColors toolColors, string[] blocksCode)
     {
-        m_blocks.Clear();
+        ClearBlocks();
 
         Vector2 areaSize = m_transform.rect.size;
         int rowsCount = m_blocksCount / m_collsCount;
@@ -73,6 +73,15 @@ public class MapPlane : MonoBehaviour
             }
         }
     }
+    void ClearBlocks()
+    {
+        foreach (BlockButton block in m_blocks)
+        {
+            Destroy(block.gameObject);
+        }
+
+        m_blocks.Clear();
+    }
 
     public string[] GetRowsCode()
     {
@@ -99,8 +108,6 @@ public class MapPlane : MonoBehaviour
                 rowNum++;
             }
         }
-
-        Debug.Log(rowsCode.Length);
 
         return rowsCode;
     }

@@ -5,4 +5,5 @@ using UnityEngine;
 public interface IEditorTool
 {
     Tool GetCurrentTool();
+    bool IsActive();
 }

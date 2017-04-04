@@ -20,7 +20,7 @@ public static class FileParser
     public readonly static char lifeKey = 'L';
     public readonly static char multiplierKey = 'P';
     public readonly static char fireballKey = 'F';
-    public readonly static char multyballKey = 'M';
+    public readonly static char multiballKey = 'M';
 
     public readonly static string levelPattern = "Level_";
     readonly static string fileType = ".txt";
@@ -85,6 +85,7 @@ public static class FileParser
         }
         else
         {
+            Debug.Log("Invalid");
             level = GetLevelFilePattern();
         }
 
@@ -101,11 +102,14 @@ public static class FileParser
 
             for (int i = 0; i < level.Length; i++)
             {
+                string line = "";
+
                 if (i != level.Length - 1)
                 {
-                    level[i] += lineSeparator;
+                    line = level[i] + lineSeparator;
                 }
-                writer.Write(level[i]);
+
+                writer.Write(line);
             }
 
             writer.Close();
