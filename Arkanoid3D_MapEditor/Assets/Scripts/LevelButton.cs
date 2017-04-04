@@ -36,6 +36,6 @@ public class LevelButton : MonoBehaviour
 
     public void StartEditLevel()
     {
-        m_controller.SetLevelToEdit(m_number);
+        m_controller.StartEditLevel(m_number);
     }
 }

@@ -4,123 +4,86 @@ using System.Text.RegularExpressions;
 using UnityEngine;
 using System.IO;
 
-public class FileParser : MonoBehaviour
+public static class FileParser
 {
-    public FileParser(int levelNumber)
-    {
-        m_levelNumber = levelNumber;
-        m_level = GetLevel();
-    }
+    public readonly static char lineSeparator = '/';
+    public readonly static char blockSeparator = '_';
 
-    int m_levelNumber;
-    string[] m_level;
+    public readonly static char easyKey = 'E';
+    public readonly static char normalKey = 'N';
+    public readonly static char hardKey = 'H';
+    public readonly static char immortalKey = 'I';
+    public readonly static char emptyKey = '.';
 
-    const char SEPARATOR = '/';
-    const char EASY_KEY = 'E';
-    const char NORMAL_KEY = 'N';
-    const char HARD_KEY = 'H';
-    const char IMMORTAL_KEY = 'I';
-    const char EMPTY_KEY = '.';
+    public readonly static char wallKey = 'W';
+    public readonly static char gunsKey = 'G';
+    public readonly static char lifeKey = 'L';
+    public readonly static char multiplierKey = 'P';
+    public readonly static char fireballKey = 'F';
+    public readonly static char multyballKey = 'M';
 
-    const string LEVEL_PATTERN = "Level";
-    const string STANDART_LEVEL_NAME = "Level";
-    const int SYSTEM_STR_COUNT = 2;
-    const int STANDART_GROUND_KEY = 0;
+    public readonly static string levelPattern = "Level_";
+    readonly static string fileType = ".txt";
+    public readonly static int systemStrCount = 2;
 
-    const int ROWS_COUNT = 20;
-    const int COLLS_COUNT = 14;
+    readonly static string standartLevelName = "Level";
+    readonly static string resourcesPath = Application.dataPath + "/Resources/";
+    readonly static string levelPath = "Levels/";
+    readonly static int standartGroundKey = 0;
 
-    public string[] level
+    public readonly static int rowsCount = 20;
+    public readonly static int collsCount = 14;
+
+    public static void CreateFiles(int count)
     {
-        get
+        string path = resourcesPath + levelPath;
+
+        for(int i = 0; i < count; i++)
         {
-            return m_level;
-        }
-    }
-    public int collsCount
-    {
-        get
-        {
-            return COLLS_COUNT;
-        }
-    }
-    public int rowsCount
-    {
-        get
-        {
-            return ROWS_COUNT;
-        }
-    }
-    public int blocksCount
-    {
-        get
-        {
-            return (ROWS_COUNT * COLLS_COUNT);
-        }
-    }
-    public char easy
-    {
-        get
-        {
-            return EASY_KEY;
-        }
-    }
-    public char normal
-    {
-        get
-        {
-            return NORMAL_KEY;
-        }
-    }
-    public char hard
-    {
-        get
-        {
-            return HARD_KEY;
-        }
-    }
-    public char immortal
-    {
-        get
-        {
-            return IMMORTAL_KEY;
-        }
-    }
-    public char empty
-    {
-        get
-        {
-            return EMPTY_KEY;
+            string file = levelPattern + i.ToString() + fileType;
+            File.CreateText(path + file);
         }
     }
 
-    string[] GetLevelFilePattern()
+    static string[] GetLevelFilePattern()
     {
-        const int strCount = ROWS_COUNT + SYSTEM_STR_COUNT;
+        int strCount = rowsCount + systemStrCount;
         string[] pattern = new string[strCount];
-        string emptyRow = "";
+        string rowPattern = "";
 
-        for (int i = 0; i < COLLS_COUNT; i++)
+        for (int i = 0; i < collsCount; i++)
         {
-            emptyRow += empty;
+            rowPattern += emptyKey;
+            rowPattern += emptyKey;
+            if (i != collsCount - 1)
+            {
+                rowPattern += blockSeparator;
+            }
         }
 
         for (int i = 0; i < strCount; i++)
         {
-            pattern[i] = emptyRow;
+            pattern[i] = rowPattern;
         }
 
-        pattern[0] = STANDART_LEVEL_NAME;
-        pattern[1] = STANDART_GROUND_KEY.ToString();
+        pattern[0] = standartLevelName;
+        pattern[1] = standartGroundKey.ToString();
 
         return pattern;
     }
-    string[] GetLevel()
-    {
-        TextAsset levelCode = Resources.Load(LEVEL_PATTERN + m_levelNumber.ToString()) as TextAsset;
-        string[] level = levelCode.text.Split(SEPARATOR);
 
-        if (level.Length != SYSTEM_STR_COUNT + ROWS_COUNT)
+    public static string[] GetLevel(int levelNumber)
+    {
+        string[] level = { };
+
+        string file = levelPath + levelPattern + levelNumber.ToString();
+        TextAsset levelCode = Resources.Load(file) as TextAsset;
+
+        if (IsLevelValid(levelCode))
+        {
+            level = levelCode.text.Split(lineSeparator);
+        }
+        else
         {
             level = GetLevelFilePattern();
         }
@@ -128,21 +91,60 @@ public class FileParser : MonoBehaviour
         return level;
     }
 
-    // TODO: Обезопасить
-    public void EditLevel(string[] level)
+    public static void EditLevel(int levelNumber, string[] level)
     {
-        string path = Application.dataPath + "/Resources/" + LEVEL_PATTERN + m_levelNumber + ".txt";
-        StreamWriter writer = new StreamWriter(path, false);
-
-        for (int i = 0; i < level.Length; i++)
+        if (IsLevelAvalable(levelNumber))
         {
-            if (i != level.Length - 1)
+            string path = resourcesPath + levelPath;
+            string file = levelPattern + levelNumber.ToString() + fileType;
+            StreamWriter writer = new StreamWriter(path + file, false);
+
+            for (int i = 0; i < level.Length; i++)
             {
-                level[i] += SEPARATOR;
+                if (i != level.Length - 1)
+                {
+                    level[i] += lineSeparator;
+                }
+                writer.Write(level[i]);
             }
-            writer.Write(level[i]);
+
+            writer.Close();
+        }
+    }
+
+    public static bool IsLevelAvalable(int levelNumber)
+    {
+        string path = resourcesPath + levelPath;
+        string file = levelPattern + levelNumber.ToString() + fileType;
+
+        return File.Exists(path + file);
+    }
+    static bool IsLevelValid(TextAsset levelCode)
+    {
+        if (levelCode != null)
+        {
+            string[] levelRows = levelCode.text.Split(lineSeparator);
+
+            if (levelRows.Length == systemStrCount + rowsCount)
+            {
+                return IsBlocksCountValid(levelRows);
+            }
         }
 
-        writer.Close();
+        return false;
+    }
+    static bool IsBlocksCountValid(string[] levelRows)
+    {
+        for (int i = systemStrCount; i < levelRows.Length; i++)
+        {
+            string[] blocksInRow = levelRows[i].Split(blockSeparator);
+
+            if (blocksInRow.Length != collsCount)
+            {
+                return false;
+            }
+        }
+
+        return true;
     }
 }

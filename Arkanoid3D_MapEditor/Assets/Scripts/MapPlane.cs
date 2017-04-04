@@ -1,10 +1,12 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class MapPlane : MonoBehaviour
 {
-    public Block m_block;
+    public BlockButton m_instantBlock;
+    List<BlockButton> m_blocks;
     RectTransform m_transform;
 
     int m_blocksCount;
@@ -14,17 +16,32 @@ public class MapPlane : MonoBehaviour
 
     void Awake()
     {
+        m_blocks = new List<BlockButton>();
         m_transform = GetComponent<RectTransform>();
     }
-    public void Init(int blocksCount, int collsCount)
+    public void Init(IEditorTool editorTool, IToolColors toolColors, string[] blocksCode)
     {
-        m_blocksCount = blocksCount;
-        m_collsCount = collsCount;
-        SpawnBlocks();
-    } 
+        m_collsCount = FileParser.collsCount;
+        m_blocksCount = m_collsCount * FileParser.rowsCount;
+        SpawnBlocks(editorTool, toolColors, blocksCode);
+    }
 
-    void SpawnBlocks()
+    void FixedUpdate()
     {
+        HandleTouch();
+    }
+    void HandleTouch()
+    {
+        if (Input.GetMouseButtonDown(0))
+        {
+
+        }
+    }
+
+    void SpawnBlocks(IEditorTool editorTool, IToolColors toolColors, string[] blocksCode)
+    {
+        m_blocks.Clear();
+
         Vector2 areaSize = m_transform.rect.size;
         int rowsCount = m_blocksCount / m_collsCount;
 
@@ -39,8 +56,12 @@ public class MapPlane : MonoBehaviour
 
         for (int i = 0; i < m_blocksCount; i++)
         {
-            Block newBlock = Instantiate(m_block);
-            newBlock.Init(blockSize);
+            char blockKey = blocksCode[i][0];
+            char bonusKey = blocksCode[i][1];
+
+            BlockButton newBlock = Instantiate(m_instantBlock);
+            m_blocks.Add(newBlock);
+            newBlock.Init(editorTool, toolColors, blockSize, blockKey, bonusKey);
             newBlock.transform.SetParent(transform);
             newBlock.transform.localPosition = posOffset;
             posOffset.x += (oneOffset + blockSize.x);
@@ -51,5 +72,36 @@ public class MapPlane : MonoBehaviour
                 posOffset = new Vector3(oneOffset, posOffset.y - (oneOffset + blockSize.y), 0);
             }
         }
+    }
+
+    public string[] GetRowsCode()
+    {
+        string[] rowsCode = new string[FileParser.rowsCount];
+        string row = "";
+        int rowNum = 0;
+        int collNum = 0;
+
+        for (int i = 0; i < m_blocks.Count; i++)
+        {
+            row += m_blocks[i].GetCode();
+            if (collNum != FileParser.collsCount - 1)
+            {
+                row += FileParser.blockSeparator;
+            }
+            collNum++;
+
+
+            if (collNum == FileParser.collsCount)
+            {
+                rowsCode[rowNum] = row;
+                row = "";
+                collNum = 0;
+                rowNum++;
+            }
+        }
+
+        Debug.Log(rowsCode.Length);
+
+        return rowsCode;
     }
 }

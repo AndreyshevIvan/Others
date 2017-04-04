@@ -3,59 +3,20 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class UIArea : MonoBehaviour
+public class UIArea : MonoBehaviour, IToolColors
 {
     EditorController m_editor;
 
-    public Button m_easyBlock;
-    public Button m_normalBlock;
-    public Button m_hardBlock;
-    public Button m_immortalBlock;
-    public Button m_lastic;
+    public Button[] m_editorButtons;
 
     public Color m_easyColor;
     public Color m_normalColor;
     public Color m_hardColor;
     public Color m_immortalColor;
-    public Color m_lasticColor;
+
+    public Color m_emptyColor;
 
     public Image m_currTool;
-
-    public Color easy
-    {
-        get
-        {
-            return m_easyColor;
-        }
-    }
-    public Color normal
-    {
-        get
-        {
-            return m_normalColor;
-        }
-    }
-    public Color hard
-    {
-        get
-        {
-            return m_hardColor;
-        }
-    }
-    public Color immortal
-    {
-        get
-        {
-            return m_immortalColor;
-        }
-    }
-    public Color empty
-    {
-        get
-        {
-            return m_lasticColor;
-        }
-    }
 
     public void Init(EditorController editor)
     {
@@ -69,12 +30,65 @@ public class UIArea : MonoBehaviour
 
     public void SetActive(bool isActive)
     {
-        m_currTool.color = Color.clear;
+        foreach (Button button in m_editorButtons)
+        {
+            button.interactable = isActive;
+        }
+    }
 
-        m_easyBlock.interactable = isActive;
-        m_normalBlock.interactable = isActive;
-        m_hardBlock.interactable = isActive;
-        m_immortalBlock.interactable = isActive;
-        m_lastic.interactable = isActive;
+    public Color GetBlockColor(char blockKey)
+    {
+        Color color = m_emptyColor;
+
+        if (blockKey == FileParser.easyKey)
+        {
+            color = m_easyColor;
+        }
+        else if (blockKey == FileParser.normalKey)
+        {
+            color = m_normalColor;
+        }
+        else if (blockKey == FileParser.hardKey)
+        {
+            color = m_hardColor;
+        }
+        else if (blockKey == FileParser.immortalKey)
+        {
+            color = m_immortalColor;
+        }
+
+        return color;
+    }
+
+    public Color GetBonusColor(char bonusKey)
+    {
+        Color color = m_emptyColor;
+
+        if (bonusKey == FileParser.wallKey)
+        {
+            color = m_emptyColor;
+        }
+        else if (bonusKey == FileParser.lifeKey)
+        {
+            color = m_emptyColor;
+        }
+        else if (bonusKey == FileParser.multiplierKey)
+        {
+            color = m_emptyColor;
+        }
+        else if (bonusKey == FileParser.multiplierKey)
+        {
+            color = m_emptyColor;
+        }
+        else if (bonusKey == FileParser.gunsKey)
+        {
+            color = m_emptyColor;
+        }
+        else if (bonusKey == FileParser.fireballKey)
+        {
+            color = m_emptyColor;
+        }
+
+        return color;
     }
 }
