@@ -9,11 +9,10 @@ public class ButtonsArea : MonoBehaviour
     Vector2 m_startPos;
     Vector2 m_size;
     RectTransform m_transform;
-    EditorController m_editor;
 
-    int m_levelsCount;
+    int m_levelsCount = 10;
 
-    const int BUTTONS_IN_ROW = 5;
+    const int BUTTONS_IN_ROW = 6;
     const float BUTTON_RELATIVE_WIDTH = 0.85f;
 
     void Awake()
@@ -21,14 +20,11 @@ public class ButtonsArea : MonoBehaviour
         m_transform = GetComponent<RectTransform>();
     }
 
-    public void Init(EditorController editor)
+    public void Init()
     {
-        m_editor = editor;
-        m_levelsCount = m_editor.levelsCount;
         SpawnButtons();
     }
 
-    //TODO: улучшить читаемость
     void SpawnButtons()
     {
         Vector2 areaSize = m_transform.rect.size;
@@ -46,7 +42,7 @@ public class ButtonsArea : MonoBehaviour
         for (int buttonNum = 0; buttonNum < m_levelsCount; buttonNum++)
         {
             LevelButton button = Instantiate(m_button);
-            button.Init(m_editor, buttonWidth, buttonNum);
+            button.Init(buttonWidth, buttonNum);
             button.transform.SetParent(transform);
             button.transform.localPosition = posOffset;
             posOffset.x += (oneOffset + buttonWidth);

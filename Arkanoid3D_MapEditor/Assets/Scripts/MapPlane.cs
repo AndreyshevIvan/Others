@@ -21,8 +21,8 @@ public class MapPlane : MonoBehaviour
     }
     public void Init(IEditorTool editorTool, IToolColors toolColors, string[] blocksCode)
     {
-        m_collsCount = FileParser.collsCount;
-        m_blocksCount = m_collsCount * FileParser.rowsCount;
+        m_collsCount = Level.collsCount;
+        m_blocksCount = m_collsCount * Level.rowsCount;
         SpawnBlocks(editorTool, toolColors, blocksCode);
     }
 
@@ -61,7 +61,7 @@ public class MapPlane : MonoBehaviour
 
             BlockButton newBlock = Instantiate(m_instantBlock);
             m_blocks.Add(newBlock);
-            newBlock.Init(editorTool, toolColors, blockSize, blockKey, bonusKey);
+            newBlock.Init(blockSize);
             newBlock.transform.SetParent(transform);
             newBlock.transform.localPosition = posOffset;
             posOffset.x += (oneOffset + blockSize.x);
@@ -81,34 +81,5 @@ public class MapPlane : MonoBehaviour
         }
 
         m_blocks.Clear();
-    }
-
-    public string[] GetRowsCode()
-    {
-        string[] rowsCode = new string[FileParser.rowsCount];
-        string row = "";
-        int rowNum = 0;
-        int collNum = 0;
-
-        for (int i = 0; i < m_blocks.Count; i++)
-        {
-            row += m_blocks[i].GetCode();
-            if (collNum != FileParser.collsCount - 1)
-            {
-                row += FileParser.blockSeparator;
-            }
-            collNum++;
-
-
-            if (collNum == FileParser.collsCount)
-            {
-                rowsCode[rowNum] = row;
-                row = "";
-                collNum = 0;
-                rowNum++;
-            }
-        }
-
-        return rowsCode;
     }
 }

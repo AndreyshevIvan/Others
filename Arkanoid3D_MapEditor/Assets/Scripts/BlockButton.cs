@@ -24,58 +24,28 @@ public class BlockButton : MonoBehaviour
         m_blockKeyUI.text = "";
         m_bonusKeyUI.text = "";
     }
-    public void Init(IEditorTool editorTool, IToolColors toolColors ,Vector2 size, char blockKey, char bonusKey)
+    public void Init(Vector2 size)
     {
-        m_blockKey = blockKey;
-        m_bonusKey = bonusKey;
-        m_editorTool = editorTool;
-        m_toolColor = toolColors;
-
         m_transform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, size.x);
         m_transform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, size.y);
     }
 
     private void FixedUpdate()
     {
-        m_blockKeyUI.text = (m_blockKey == FileParser.emptyKey) ? "" : m_blockKey.ToString();
-        m_bonusKeyUI.text = (m_bonusKey == FileParser.emptyKey) ? "" : m_bonusKey.ToString();
 
-        m_blockImg.color = m_toolColor.GetBlockColor(m_blockKey);
-        m_bonusImg.color = m_toolColor.GetBonusColor(m_bonusKey);
     }
 
     public void AddProperty()
     {
-        char key = m_editorTool.GetCurrentTool().key;
 
-        if (m_editorTool.GetCurrentTool().type == ToolType.BLOCK)
-        {
-            SetBlockKey(key);
-        }
-        else if (m_editorTool.GetCurrentTool().type == ToolType.BONUS)
-        {
-            SetBonusKey(key);
-        }
     }
 
-    public void SetBlockKey(char key)
+    public void SetBlockKey()
     {
-        m_blockKey = key;
 
-        if (m_blockKey == FileParser.emptyKey)
-        {
-            SetBonusKey(FileParser.emptyKey);
-        }
     }
-    public void SetBonusKey(char key)
+    public void SetBonusKey()
     {
-        m_bonusKey = key;
-    }
 
-    public string GetCode()
-    {
-        string code = m_blockKey.ToString() + m_bonusKey.ToString();
-
-        return code;
     }
 }

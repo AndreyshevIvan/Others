@@ -7,8 +7,6 @@ public class LevelButton : MonoBehaviour
 {
     Text m_textArea;
     RectTransform m_transform;
-    EditorController m_controller;
-    int m_number = 0;
 
     const string NAME_PATTERN = "Button_";
 
@@ -23,12 +21,9 @@ public class LevelButton : MonoBehaviour
 
     }
 
-    public void Init(EditorController editController, float size, int number)
+    public void Init(float size, int levelNamber)
     {
-        m_number = number;
-        m_controller = editController;
-        m_textArea.text = m_number.ToString();
-        name = NAME_PATTERN + m_number.ToString();
+        m_textArea.text = levelNamber.ToString();
 
         m_transform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, size);
         m_transform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, size);
@@ -36,6 +31,6 @@ public class LevelButton : MonoBehaviour
 
     public void StartEditLevel()
     {
-        m_controller.StartEditLevel(m_number);
+
     }
 }
