@@ -39,20 +39,13 @@ public class MapPlane : MonoBehaviour
         m_offset = new Vector2(offsetX, offsetY);
         m_buttonSize = new Vector2(blockWidth, blockHeight);
     }
-    public void Init(IGameLevel level)
+    public void Init(IGameLevel level, ref Tool editorTool)
     {
         m_level = level;
 
-        SpawnBlocks();
+        SpawnBlocks(ref editorTool);
     }
-    
-    void TurnOffModes()
-    {
-        foreach (BlockButton button in m_buttons)
-        {
-            button.TurnOffModes();
-        }
-    }
+
     public void SetBlockMode()
     {
         foreach (BlockButton button in m_buttons)
@@ -68,6 +61,29 @@ public class MapPlane : MonoBehaviour
         }
     }
 
+    public List<BlockType> GetBlocksMap()
+    {
+        List<BlockType> blocksMap = new List<BlockType>();
+
+        foreach (BlockButton button in m_buttons)
+        {
+            blocksMap.Add(button.block);
+        }
+
+        return blocksMap;
+    }
+    public List<BonusType> GetBonusMap()
+    {
+        List<BonusType> bonusMap = new List<BonusType>();
+
+        foreach (BlockButton button in m_buttons)
+        {
+            bonusMap.Add(button.bonus);
+        }
+
+        return bonusMap;
+    }
+
     void FixedUpdate()
     {
         HandleTouch();
@@ -80,7 +96,7 @@ public class MapPlane : MonoBehaviour
         }
     }
 
-    void SpawnBlocks()
+    void SpawnBlocks(ref Tool editorTool)
     {
         ClearBlocks();
 
@@ -93,8 +109,9 @@ public class MapPlane : MonoBehaviour
         for (int buttonNum = 0; buttonNum < m_blocksCount; buttonNum++)
         {
             BlockButton button = Instantiate(m_instantBlock);
-            button.Init(blocksMap[buttonNum], bonusMap[buttonNum]);
-            button.SetTransformProperty(m_buttonSize, posOffset, transform);
+            button.InitTool(ref editorTool);
+            button.InitItems(blocksMap[buttonNum], bonusMap[buttonNum]);
+            button.InitTransformProperty(m_buttonSize, posOffset, transform);
             m_buttons.Add(button);
 
             posOffset.x += (oneOffset + m_buttonSize.x);

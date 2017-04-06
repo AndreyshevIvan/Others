@@ -78,4 +78,13 @@ public class Level : IGameLevel
     {
         return m_bonusesMap;
     }
+
+    public void SetBlocksMap(List<BlockType> blocksMap)
+    {
+        m_blocksMap = blocksMap;
+    }
+    public void SetBonusesMap(List<BonusType> blocksMap)
+    {
+        m_bonusesMap = blocksMap;
+    }
 }
