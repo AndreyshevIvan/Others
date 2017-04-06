@@ -6,11 +6,14 @@ public class ButtonsArea : MonoBehaviour
 {
     public LevelButton m_button;
 
+    public delegate void OnStartEdit(int levelNumber);
+    public OnStartEdit startEdit;
+
     Vector2 m_startPos;
     Vector2 m_size;
     RectTransform m_transform;
 
-    int m_levelsCount = 10;
+    int m_levelsCount = 0;
 
     const int BUTTONS_IN_ROW = 6;
     const float BUTTON_RELATIVE_WIDTH = 0.85f;
@@ -20,8 +23,9 @@ public class ButtonsArea : MonoBehaviour
         m_transform = GetComponent<RectTransform>();
     }
 
-    public void Init()
+    public void Init(int levelsCount)
     {
+        m_levelsCount = levelsCount;
         SpawnButtons();
     }
 
@@ -43,6 +47,7 @@ public class ButtonsArea : MonoBehaviour
         {
             LevelButton button = Instantiate(m_button);
             button.Init(buttonWidth, buttonNum);
+            button.startEdit += StartEditLevel;
             button.transform.SetParent(transform);
             button.transform.localPosition = posOffset;
             posOffset.x += (oneOffset + buttonWidth);
@@ -53,5 +58,10 @@ public class ButtonsArea : MonoBehaviour
                 posOffset = new Vector3(oneOffset, posOffset.y - (oneOffset + buttonWidth), 0);
             }
         }
+    }
+
+    void StartEditLevel(int levelNumber)
+    {
+        startEdit(levelNumber);
     }
 }

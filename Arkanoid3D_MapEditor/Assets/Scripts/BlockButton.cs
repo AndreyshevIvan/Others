@@ -3,31 +3,42 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+public enum BlockButtonMode
+{
+    NONE,
+    BLOCK,
+    BONUS,
+}
+
 public class BlockButton : MonoBehaviour
 {
     RectTransform m_transform;
-    IEditorTool m_editorTool;
-    IToolColors m_toolColor;
 
-    char m_blockKey;
-    char m_bonusKey;
+    BlockType m_blockType;
+    BonusType m_bonusType;
 
-    public Text m_blockKeyUI;
-    public Text m_bonusKeyUI;
+    public Text m_key;
+    public Image m_backgorund;
 
-    public Image m_blockImg;
-    public Image m_bonusImg;
+    BlockButtonMode m_mode;
 
     void Awake()
     {
         m_transform = GetComponent<RectTransform>();
-        m_blockKeyUI.text = "";
-        m_bonusKeyUI.text = "";
+        m_key.text = "";
     }
-    public void Init(Vector2 size)
+    public void Init(BlockType blockType, BonusType bonusType)
+    {
+        m_blockType = blockType;
+        m_bonusType = bonusType;
+    }
+    public void SetTransformProperty(Vector2 size, Vector2 position, Transform parent)
     {
         m_transform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, size.x);
         m_transform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, size.y);
+
+        transform.SetParent(parent);
+        transform.localPosition = position;
     }
 
     private void FixedUpdate()
@@ -35,17 +46,18 @@ public class BlockButton : MonoBehaviour
 
     }
 
-    public void AddProperty()
+    public void TurnOffModes()
     {
-
+        m_mode = BlockButtonMode.NONE;
     }
-
-    public void SetBlockKey()
+    public void SetBlockMode()
     {
-
+        TurnOffModes();
+        m_mode = BlockButtonMode.BLOCK;
     }
-    public void SetBonusKey()
+    public void SetBonusMode()
     {
-
+        TurnOffModes();
+        m_mode = BlockButtonMode.BONUS;
     }
 }

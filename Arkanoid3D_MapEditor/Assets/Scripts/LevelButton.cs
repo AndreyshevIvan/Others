@@ -8,6 +8,11 @@ public class LevelButton : MonoBehaviour
     Text m_textArea;
     RectTransform m_transform;
 
+    public delegate void OnEditLevel(int levelNumber);
+    public OnEditLevel startEdit;
+
+    int m_levelNumber;
+
     const string NAME_PATTERN = "Button_";
 
     void Awake()
@@ -23,7 +28,10 @@ public class LevelButton : MonoBehaviour
 
     public void Init(float size, int levelNamber)
     {
-        m_textArea.text = levelNamber.ToString();
+        string numStr = (levelNamber + 1).ToString();
+        m_textArea.text = numStr;
+        gameObject.name = NAME_PATTERN + numStr;
+        m_levelNumber = levelNamber;
 
         m_transform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, size);
         m_transform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, size);
@@ -31,6 +39,6 @@ public class LevelButton : MonoBehaviour
 
     public void StartEditLevel()
     {
-
+        startEdit(m_levelNumber);
     }
 }

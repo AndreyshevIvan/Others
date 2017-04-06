@@ -6,24 +6,66 @@ using UnityEngine.UI;
 public class MapPlane : MonoBehaviour
 {
     public BlockButton m_instantBlock;
-    List<BlockButton> m_blocks;
+    List<BlockButton> m_buttons;
     RectTransform m_transform;
+    IGameLevel m_level;
 
-    int m_blocksCount;
+    int m_rowsCount;
     int m_collsCount;
+    int m_blocksCount;
+    Vector2 m_areaSize;
+    Vector2 m_offset;
+    Vector2 m_buttonSize;
 
     const float BLOCK_RELATIVE_WIDTH = 0.9f;
 
     void Awake()
     {
-        m_blocks = new List<BlockButton>();
+        m_buttons = new List<BlockButton>();
         m_transform = GetComponent<RectTransform>();
-    }
-    public void Init(IEditorTool editorTool, IToolColors toolColors, string[] blocksCode)
-    {
+
+        m_rowsCount = Level.rowsCount;
         m_collsCount = Level.collsCount;
-        m_blocksCount = m_collsCount * Level.rowsCount;
-        SpawnBlocks(editorTool, toolColors, blocksCode);
+        m_blocksCount = Level.blocksCount;
+
+        m_areaSize = m_transform.rect.size;
+
+        float blockWidth = m_areaSize.x / m_collsCount * BLOCK_RELATIVE_WIDTH;
+        float offsetX = m_areaSize.x - (blockWidth * m_collsCount);
+        float oneOffset = offsetX / (m_collsCount + 1);
+        float offsetY = (oneOffset * (m_rowsCount + 1));
+        float blockHeight = (m_areaSize.y - offsetY) / m_rowsCount;
+
+        m_offset = new Vector2(offsetX, offsetY);
+        m_buttonSize = new Vector2(blockWidth, blockHeight);
+    }
+    public void Init(IGameLevel level)
+    {
+        m_level = level;
+
+        SpawnBlocks();
+    }
+    
+    void TurnOffModes()
+    {
+        foreach (BlockButton button in m_buttons)
+        {
+            button.TurnOffModes();
+        }
+    }
+    public void SetBlockMode()
+    {
+        foreach (BlockButton button in m_buttons)
+        {
+            button.SetBlockMode();
+        }
+    }
+    public void SetBonusMode()
+    {
+        foreach (BlockButton button in m_buttons)
+        {
+            button.SetBonusMode();
+        }
     }
 
     void FixedUpdate()
@@ -38,48 +80,39 @@ public class MapPlane : MonoBehaviour
         }
     }
 
-    void SpawnBlocks(IEditorTool editorTool, IToolColors toolColors, string[] blocksCode)
+    void SpawnBlocks()
     {
         ClearBlocks();
 
-        Vector2 areaSize = m_transform.rect.size;
-        int rowsCount = m_blocksCount / m_collsCount;
-
-        float blockWidth = areaSize.x / m_collsCount * BLOCK_RELATIVE_WIDTH;
-        float offsetX = areaSize.x - (blockWidth * m_collsCount);
-        float oneOffset = offsetX / (m_collsCount + 1);
-        float offsetY = (oneOffset * (rowsCount + 1));
-        float blockHeight = (areaSize.y - offsetY) / rowsCount;
-        Vector2 blockSize = new Vector2(blockWidth, blockHeight);
-
+        float oneOffset = m_offset.x / (m_collsCount + 1);
         Vector3 posOffset = new Vector3(oneOffset, -oneOffset, 0);
 
-        for (int i = 0; i < m_blocksCount; i++)
+        List<BlockType> blocksMap = m_level.GetBlocksMap();
+        List<BonusType> bonusMap = m_level.GetBonusesMap();
+
+        for (int buttonNum = 0; buttonNum < m_blocksCount; buttonNum++)
         {
-            char blockKey = blocksCode[i][0];
-            char bonusKey = blocksCode[i][1];
+            BlockButton button = Instantiate(m_instantBlock);
+            button.Init(blocksMap[buttonNum], bonusMap[buttonNum]);
+            button.SetTransformProperty(m_buttonSize, posOffset, transform);
+            m_buttons.Add(button);
 
-            BlockButton newBlock = Instantiate(m_instantBlock);
-            m_blocks.Add(newBlock);
-            newBlock.Init(blockSize);
-            newBlock.transform.SetParent(transform);
-            newBlock.transform.localPosition = posOffset;
-            posOffset.x += (oneOffset + blockSize.x);
+            posOffset.x += (oneOffset + m_buttonSize.x);
+            bool isNewRow = (buttonNum + 1) % m_collsCount == 0;
 
-            bool isNewRow = (i + 1) % m_collsCount == 0;
             if (isNewRow)
             {
-                posOffset = new Vector3(oneOffset, posOffset.y - (oneOffset + blockSize.y), 0);
+                posOffset = new Vector3(oneOffset, posOffset.y - (oneOffset + m_buttonSize.y), 0);
             }
         }
     }
     void ClearBlocks()
     {
-        foreach (BlockButton block in m_blocks)
+        foreach (BlockButton block in m_buttons)
         {
             Destroy(block.gameObject);
         }
 
-        m_blocks.Clear();
+        m_buttons.Clear();
     }
 }

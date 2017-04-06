@@ -30,7 +30,6 @@ public static class DataManager
 
         if (File.Exists(m_resourcesPath + m_levelPath + fileName))
         {
-            Debug.Log("File exist");
             BinaryFormatter bFormatter = new BinaryFormatter();
             FileStream stream = new FileStream(m_resourcesPath + m_levelPath + fileName, FileMode.Open);
 

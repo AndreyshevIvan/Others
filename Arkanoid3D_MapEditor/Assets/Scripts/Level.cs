@@ -30,20 +30,16 @@ public class Level : IGameLevel
     public Level(int key)
     {
         m_key = key;
-        m_blocksMap = new BlockType[blocksCount];
-        m_bonusesMap = new BonusType[blocksCount];
+        m_blocksMap = new List<BlockType>();
+        m_bonusesMap = new List<BonusType>();
 
-        for (int i = 0; i < blocksCount; i++)
-        {
-            m_blocksMap[i] = BlockType.NONE;
-            m_bonusesMap[i] = BonusType.NONE;
-        }
+        ResetItems();
     }
 
     int m_key;
     int m_groundKey;
-    BlockType[] m_blocksMap;
-    BonusType[] m_bonusesMap;
+    List<BlockType> m_blocksMap;
+    List<BonusType> m_bonusesMap;
 
     readonly static int m_rowsCount = 20;
     readonly static int m_collsCount = 14;
@@ -61,15 +57,24 @@ public class Level : IGameLevel
         get { return m_rowsCount * m_collsCount; }
     }
 
+    void ResetItems()
+    {
+        for (int i = 0; i < blocksCount; i++)
+        {
+            m_blocksMap.Add(BlockType.NONE);
+            m_bonusesMap.Add(BonusType.NONE);
+        }
+    }
+
     public int GetKey()
     {
         return m_key;
     }
-    public BlockType[] GetBlocksMap()
+    public List<BlockType> GetBlocksMap()
     {
         return m_blocksMap;
     }
-    public BonusType[] GetBonusesMap()
+    public List<BonusType> GetBonusesMap()
     {
         return m_bonusesMap;
     }
