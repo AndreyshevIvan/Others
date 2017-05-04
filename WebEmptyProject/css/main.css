@@ -5,6 +5,7 @@ body
     border: 0;
     background-color: #2C3E50;
     font-family: "Roboto Light", sans-serif;
+    color: whitesmoke;
 }
 
 h1, h2, h3, h4, p
@@ -19,7 +20,4 @@ h1, h2, h3, h4, p
 
 .application_box
 {
-    position: relative;
-    margin: 0px auto;
-    color: whitesmoke;
 }

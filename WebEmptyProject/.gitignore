@@ -40,6 +40,8 @@ jspm_packages
 dist
 build
 
-# TS Chache
+# ts cache
 .tscache
-.tscache/*
+
+# php storm
+.idea

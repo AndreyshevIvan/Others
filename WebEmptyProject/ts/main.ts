@@ -1,4 +1,11 @@
+import { CMyClass } from "./MyClass";
+
 window.onload = (): void => {
-    const i: number = 0;
-    const j: number = 0;
+    main();
 };
+
+function main() {
+    const appBox: HTMLElement = document.getElementById("application_inner");
+    const myClass: CMyClass = new CMyClass();
+    appBox.innerText = myClass.getMessage();
+}

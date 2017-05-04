@@ -3,6 +3,37 @@ module.exports = function(grunt)
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
 
+        copy: {
+            systemjs: {
+                files:
+                    [
+                        {
+                            expand: true,
+                            cwd: 'node_modules/systemjs/dist/',
+                            src: 'system.js',
+                            dest: 'build/'
+                        }
+                    ]
+            },
+            react: {
+                files:
+                    [
+                        {
+                            expand: true,
+                            cwd: 'node_modules/react/dist/',
+                            src: 'react.js',
+                            dest: 'build/'
+                        },
+                        {
+                            expand: true,
+                            cwd: 'node_modules/react-dom/dist/',
+                            src: 'react-dom.js',
+                            dest: 'build/'
+                        }
+                    ],
+            }
+        },
+
         ts: {
             default: {
                 src: ['ts/*.ts'],
@@ -26,8 +57,18 @@ module.exports = function(grunt)
             validate: ['ts/*.ts']
         },
 
+        react: {
+            single_file_output:
+            {
+                files:
+                    {
+                        'build/index.js': 'jsx/index.jsx'
+                    }
+            }
+        },
+
         clean: {
-            allScripts: ['build/scripts.js'],
+            scripts: ['build/scripts.js'],
             js_min: ['build/*.js'],
             css_min: ['build/*.css']
         },
@@ -60,6 +101,7 @@ module.exports = function(grunt)
             target: {
                 files: {
                     'build/styles.min.css': [
+                        'node_modules/bootstrap/dist/css/bootstrap.min.css',
                         'css/main.css'
                     ]
                 }
@@ -75,7 +117,11 @@ module.exports = function(grunt)
             prod: {
                 src: [
                     'build/scripts.min.js',
-                    'build/styles.min.css'
+                    'build/styles.min.css',
+                    'build/react-dom.js',
+                    'build/react.js',
+                    'build/index.js',
+                    'build/system.js'
                 ],
 
                 dest: ['index.html']
@@ -96,9 +142,12 @@ module.exports = function(grunt)
                         'shell',
                         'tslint',
                         'ts',
+                        'react',
+                        'copy:react',
                         'uglify',
-                        'hashres:prod',
-                        'clean:allScripts',
+                        'clean:scripts',
+                        'copy:systemjs',
+                        'hashres:prod'
                 ],
                 options: {livereload: true}
             },
@@ -127,11 +176,13 @@ module.exports = function(grunt)
 
     grunt.loadNpmTasks('grunt-ts'),
     grunt.loadNpmTasks('grunt-tslint');
+    grunt.loadNpmTasks('grunt-react');
     grunt.loadNpmTasks('grunt-contrib-clean');
     grunt.loadNpmTasks('grunt-contrib-watch');
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-cssmin');
     grunt.loadNpmTasks('grunt-contrib-connect');
+    grunt.loadNpmTasks('grunt-contrib-copy');
     grunt.loadNpmTasks('grunt-hashres');
     grunt.loadNpmTasks('grunt-open');
     grunt.loadNpmTasks('grunt-shell');
@@ -141,10 +192,13 @@ module.exports = function(grunt)
             'shell',
             'tslint',
             'ts',
+            'react',
+            'copy:react',
             'uglify',
             'cssmin',
+            'clean:scripts',
+            'copy:systemjs',
             'hashres:prod',
-            'clean:allScripts',
             'connect:server',
             'watch'
     ]);
